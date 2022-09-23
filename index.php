@@ -1,11 +1,11 @@
 <?php
-require __DIR__. '/vendor/autoload.php';
+require __DIR__ . '/vendor/autoload.php';
 
 use App\Http\router;
 use App\Http\response;
 use App\Controller\Paginas\home;
 
-define('URL','http://projetos/cursoMVC');
+define('URL','http://localhost/ProjetoMVC');
 
 $obRouter = new router(URL);
 
@@ -18,4 +18,3 @@ $obRouter->get('/',[
 
 //
 $obRouter->run()->sendResponse();
-

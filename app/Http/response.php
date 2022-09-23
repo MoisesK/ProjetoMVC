@@ -65,7 +65,7 @@ private function sendHeaders(){
 
   //enviar headers
   foreach($this->headers as $key=>$value){
-    header($key." : ".$value);
+    header($key.": ".$value);
   }
 }
 
@@ -78,7 +78,7 @@ public function sendResponse(){
 
   //IMPRIME O CONTEÚDO
   switch ($this->contentType) {
-    case 'text/html':
+    case ($this->contentType = 'text/html'):
       echo $this->content;
       exit;
   }

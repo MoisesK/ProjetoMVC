@@ -57,7 +57,7 @@ class router{
       //VALIDAÇÃO DOS Parametros
       foreach ($params as $key => $value) {
         if($value instanceof Closure){
-          $params['Controller'] = $value;
+          $params['controller'] = $value;
           unset($params[$key]);
           continue;
         }
@@ -76,6 +76,27 @@ class router{
   public function get($route,$params = []){
     return $this->addRoute('GET',$route,$params);
   }
+
+  /**
+   * Método responsável por definir uma rota de POST
+   */
+    public function post($route,$params = []){
+      return $this->addRoute('POST',$route,$params);
+    }
+
+  /**
+   * Método responsável por definir uma rota de PUT
+   */
+    public function put($route,$params = []){
+      return $this->addRoute('PUT',$route,$params);
+    }
+
+  /**
+   * Método responsável por definir uma rota de DELETE
+   */
+    public function delete($route,$params = []){
+      return $this->addRoute('DELETE',$route,$params);
+    }
 
   /**
    * Método responsável por retornar a URI desconsiderando o prefixo
@@ -101,51 +122,54 @@ class router{
    * @return array
    */
   private function getRoute(){
-    //uri
-    $uri = $this->getUri();
+      //uri
+      $uri = $this->getUri();
 
-    //HTTPMethod
-    $httpMethod = $this->request->gethttpMethod();
+      //HTTPMethod
+      $httpMethod = $this->request->gethttpMethod();
 
-    //VALIDA AS ROTAS
-    foreach ($this->routes as $patternRoute => $methods) {
-      //VERIFICA SE A URI BATE COM O PADRÃO
-      if(preg_match($patternRoute,$uri)){
-        //VERIFICA O METODO
-        if($methods[$httpMethod]){
-          //RETORNO DOS PARAMETROS DA ROTA
-          return $methods[$httpMethod];
+      //VALIDA AS ROTAS
+      foreach ($this->routes as $patternRoute => $methods) {
+
+        //VERIFICA SE A URI BATE COM O PADRÃO
+          if(preg_match($patternRoute,$uri)){
+            //VERIFICA SE EXISTE O METODO
+            if(isset($methods[$httpMethod])){
+              //RETORNO DOS PARAMETROS DA ROTA
+              return $methods[$httpMethod];
+            }
+
+      //MÉTODO NÃO PERMITIDO/DEFINIDO
+            throw new Exception("Método não permitido", 405);
+          }
         }
-  //MÉTODO NÃO PERMITIDO/DEFINIDO
-        throw new Exception("Método não permitido", 405 );
-
-      }
+        //URL NÃO ENCONTRADA
+        throw new Exception("URL não encontrada", 404);
     }
 
-    //URL NÃO ENCONTRADA
-    throw new Exception("URL não encontrada", 404);
 
-  }
 
 /**
  * Método responsável por executar a rota atual
- * @return response
+ * @return Response
  */
-  public function run(){
+  public function run()
+  {
     try {
       //obtem a rota atual
       $route = $this->getRoute();
-      echo "<pre>";
-      print_r($route);
-      echo "</pre>"; exit;
 
-    } catch (Exception $e) {
-        return new Response($e->getCode(),$e->getMessage());
-    }
-
+      //Verifica o Controlador
+        if(!isset($route['controller']))
+        {
+          throw new Exception("A URL não pode ser processada", 500);
+        }
+      }
+      catch (Exception $e)
+      {
+          return new response($e->getCode(),$e->getMessage());
+      }
   }
-
-
 }
 
- ?>
+?>
